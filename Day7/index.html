@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Firetodo</title>
+    <!-- Firebase -->
+    <!-- 서버 처음 시작될 때 잡고가는 것이 좋기 때문에 head tag에 들어감 -->
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        // TODO: Replace with your project's customized code snippet
+        var config = { // var => const로 바꿔도 됨
+            apiKey: "프로젝트 설정에서 가져오세요", // 프로젝트 설정에서 가져옴
+            // authDomain: "<PROJECT_ID>.firebaseapp.com", // login기능 사용할 때
+            databaseURL: "https://todo-c82b9.firebaseio.com",
+            projectId: "todo-c82b9", // 현재는 DATABASE_NAME과 동일함
+            // storageBucket: "<BUCKET>.appspot.com",
+            // messagingSenderId: "<SENDER_ID>",
+        };
+        firebase.initializeApp(config);
+    </script>
+</head>
+<body>
+    <div id="app">
+        <div>
+            <input v-model="newTodo" @keyup.enter="addTodo">
+        </div>
+        
+        <div>
+            <ul>
+                
+    
+                <!-- <li v-for="todo in todos">{{ todo['.value'] }}</li> -->
+                <li v-for="todo in todos">
+                    <!-- select box generate해서 가져오기 -->
+                    <input v-model="todo.completed" @change="updateTodo(todo)" type="checkbox"> <!-- 연결 property--> 
+                    <!-- 양방향 bind가 되어야 한다 => v-model -->
+                    <!-- 값이 바뀔때 마다 바꿔줌 : @change -->
+                    <!-- @change="updateTodo(인자가 없을 때 event가 넘어옴)" -->
+
+                    {{ todo.content }}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- 문서에 작성된 순서 그대로 지기키 -->
+
+    <!-- VueFire(vue와 firebase 코드 아래에만 있으면 됨) -->
+    <!-- Vue와 Firebase를 연결시켜주는 package -->
+    <script src="https://unpkg.com/vuefire/dist/vuefire.js"></script> 
+    <script>
+        const db = firebase.database()
+        const app = new Vue({
+            el: '#app',
+            data: {
+                newTodo: '',
+                // todos: [], // 추후에 database code로 바뀔 것
+            },
+            methods: {
+                addTodo: function() {
+                    // this.todos.push(this.newTodo) // DB에 저장하는 코드
+                    // this.$firebaseRefs.todos.push(this.newTodo) // property는 '$프로퍼티이름Refs' 를 사용하여 접근함 
+                    this.$firebaseRefs.todos.push({// object의 값을 가지게 함 // database의 하나의 칼럼같이 객체 저장
+                        id: Date.now(), // 현재 date로 unique값 주기 // 중복될 일 없음
+                        content: this.newTodo,
+                        completed: false// boolean값
+                    })
+
+                    this.newTodo = "" // 기존 input 창 안의 내용을 저장후 없애줌
+                },
+
+                updateTodo: function (todo) {
+                    // console.log(todo)
+                    // delete todo['.key'] // 삭제기능 // direct로 삭제됨
+                    const newTodo = { ...todo } // spread operator
+                    delete newTodo['.key'] // 객체 복사 후 복사된 곳에서 삭제
+                    this.$firebaseRefs.todos.child(todo['.key']).set(newTodo) // newTodo는 사라진 객체이기 때문에 더이상 조회 못함
+                    /*
+                    browser에서 확인
+                    const person = {name: 'john', age:34}
+                    const newPerson = {name:person.name, age:person.age} // 개체복사 : 원본 유지를 위해
+                    newPerson
+                    const newPerson2 {.. person} // 같은 key-value값을 가지는 기능
+                    */
+                }
+            },
+            // DB에 저장이 되어서 reload해도 기존 저장된 내용이 유지된다.
+            firebase: { // firebase property 정의 가능
+                // firebase에서 사용하기 때문에 data에서 옮겨온다.
+                todos: db.ref('todos')
+                // todos : 조회할 때의 이름 // firebase를 통해 접근하여 읽어옴 // 시간이 좀 걸림..
+                // db의 자식컴포넌트 `todos`로 바로가기
+                // random generate default 관계
+                // key-value : '-LeLNYUyV9kq25UMCvrI' 와 같은 key 사용
+                // 
+
+                
+
+            },
+        })
+    </script>
+</body>
+</html>

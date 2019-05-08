@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Todo App</title>
+</head>
+
+<body>
+    <div id="app">
+        <h1>{{ header }}</h1>
+        <!-- form태그 : data를 보내주는(get/post) 역할, 페이지가 이동된다. -->
+        <!-- reload없이 하기 위해 form 태그 사용 X => Javascript가 해줌 -->
+        <!-- django : M(model) V(view) T(template) => 실제는 MVC(serverside framwork가 가지는 구조) -->
+        <!-- view가 가장 중요, 소통해주는 중간지점, view로 오기위해 urls.py를 거침 -->
+        <!-- M(Model) V(View) VM(View Model) -->
+        <!-- VM이 가장 중요, 소통해주는 중간지점, vue.js와 같다. -->
+        <!-- MVT => MVVM : M => M V => VM T => V-->
+        <!-- v-once : 한번만 render하겠다. 즉, 해당하는 곳은 초기값 사용하겠다. -->
+        <h2 v-once>{{ subheader }}</h2>
+        <h3>{{ hello() }}</h3>
+        <p>{{ content }}</p>
+        <p>{{ content }}</p>
+        <p>{{ content }}</p>
+        <p>{{ content }}</p>
+        <p>{{ content }}</p>
+        <p>{{ content }}</p>
+
+
+        <!-- v-model을 사용하여 입력하고 값을 받자 -->
+        <input v-model="content">
+        <!-- content값이 input 칸에 나타나며 input칸에서 바꾸면 content값도 바뀐다. -->
+        <!-- 현재는 view => template로 바로감 -->
+        <!-- reload하면 초기화 됨, 즉, 저장이 되지 않음 -->
+        <!-- v-bind -->
+        <img v-bind:src="imageSource" width=100 height=100><!-- attribute는 뒤에 그냥 붙여주면 된다. -->
+        <!-- src="{{ imageSource }}" vue에서 정의한 소스를 바로 사용할  수 없다. -->
+        <!-- 반드시 v-bind로 넘겨야 하며, 데이터를 스트링으로 넘긴다. -->
+        <a v-bind:href="linkSource">삼성</a><!-- href="{{ linkSource }}" 링크로 가지 않는다. -->
+
+        <!-- v-on -->
+        <!-- v-on을 통해서 eventListener 정의 -->
+        <!-- 해당하는 이벤트가 발생했을 때 실행시킴 -->
+        <!-- click 이벤트가 일어났을 때 addTodo라는 함수를 부르겠다. -->
+        <button v-on:click="addTodo">추가</button> <!-- button 을 누르면 하단에 리스트가 출력되도록 할 예정 -->
+        <!--<button v-on:mouseenter="addTodo">추가</button>--> <!-- 버튼 칸 안에 마우스가 들어오면 바로 추가됨 -->
+        <!-- 함수의 인자가 없을 때는 괄호를 써주어도 되고 안써주어도 된다. -->
+        <!-- short end expression -->
+        <!-- v-on === @ -->
+        <!-- v-bind === : -->
+        <!-- 여러가지 이벤트를 한번에 등록할 때 -->
+        <!-- v-on="{ click: addTodo, mouseenter: addTodo }" -->
+        <ul>
+            <li v-for="todo in todos">{{ todo }}</li>
+        </ul>
+
+    </div>
+
+
+    <!-- 도움되는 콘솔 경고를 포함한 개발 버전 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // localStorage사용
+        const STORAGE_KEY = 'vue-app'
+        let todoStorage = {
+            fetch: function () { // 삭제되지 않게 하기 // but localStorage.clear() 또는 컴터를 껏다 키면 localStorage 내용이 전부 사라진다.....!!!!!!
+                // let todos = localStorage.getItem('vue-app')
+                
+                // let todos = JSON.parse(localStorage.getItem(STORAGE_KEY)) // 에러 안나는듯.......
+                // getItem 내용(해당하는 key에 대한 Item)이 없으면 (addTodo에서 push가 되지 않아서) error가 발생한다.
+                let todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+                // 왼쪽이 true가 아니면 오른쪽 값을 사용
+
+                return todos
+            },
+
+            save: function (todos) { // 받아온 todos는 다양한 타입인데 setItem을 통해 저장하면 string형태만 저장되기 때문에 String타입으로 바꿔줘야 한다.
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(todos)) // String으로 바꿔준다.
+            }
+        }
+        
+        // todoStorage.save(todos) // 자동 사용할 때는 주석처리하기
+
+
+        let app = new Vue({
+            el: '#app',
+
+            data: {
+                header: 'Todo App',
+                // subheader: '이것은 Todo App입니다.',
+                subheader: 'this is todo app',
+                //  content: '할일을 입력해 주세요.',
+                content: '잠자기',
+                // 이미지 주소 복사
+                imageSource: 'data:image/jpeg;base64,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',
+                linkSource: 'http://www.samsung.com',
+                // todos: ['면접 스터디 준비', '면접', '꽃단장'], // 해야할 일들을 넣어갈 것
+                // todos: [],
+                    // fetch() 만든후
+                todos: todoStorage.fetch(),
+            },
+            methods: {
+                // arrow function을 사용하지 못함
+                // methods 안에서 작성된 function에서 사용되는 this는 function이 불려지는 해당 객체를 가리키는데,
+                // arrow function을 사용하면 this는 특정 객체를 가리키지 않고 window 또는 전역을 가리키게 된다.
+                hello: function () {
+                    // return this.subheader 
+                    // reference 방법 : app이라는 객체를 먼저 가리켜야 한다.
+                    this.subheader = "소풍가고 싶어요"
+                    return this.subheader // => subheader 자체가 바껴서 모든 subheader가(h2, h3) 바뀐다.
+                    // 해당 메서드만 수정하고 싶음 => v-once
+                },
+
+                addTodo: function () {
+                    this.todos.push(this.content) // input으로 들어오는 값이 content로 저장된다.
+                    // push 후에 빈 값으로 만들어주면 입력창에 글이 사라진다.
+                    this.content = ''
+                }
+
+            },
+
+            // filter 정의, 추가적 데이터 작업을 할 때 사용
+            filters: { // filter는 function 형식(무조건)
+                capitalize: function (val) {
+                    // val 문자열/숫자/... 을 capitalize하는 함수를 만드세용
+                    if (!val) return '' // regate // return문 하나로만 구성되어있어서 oneline사용
+                    val = val.toString()
+                    val[0].toUpperCase() // 빈 값에 서 실행하면 undefined // charAt() : 해당 번호에 있는 스트링 값
+                    // get method 사용하면 error 줄입
+                    val = val.tos=String()
+                    va.charAt(0).toUpperCase()
+                    // 배열에서 끊어서 꺼내올 때 마지막을 알지 못하면 시작번호만 작성하면 끝까지 출력
+    
+                    return val.charAt(0).toUpperCase() + val.slice(1)
+                }
+
+                // return 결과
+            },
+
+            // 데이터의 변화상태를 지켜보는 친구
+            // {데이터}가 변화할 때, {XXX 를 하게} 만들 수 있음
+            // todos 배열에 새로운 데이터가 들어오면, localStorage에 저장하게 한다.
+            watch: {
+                todos: { // 데이터의 이름값을 그대로 key로 적용
+                    // handler: function () {
+                    //     // todos 에 뭔가 일어나면 이 메서드의 일을 한다.
+                    //     // console.log('Todo 새로 추가 됐어용')
+                    //     alert('Todo 새로 추가됐어요')
+                    // }
+                    handler: function (todoList) {
+                        // 데이터 객체가 들어온 경우
+                        console.log(todoList) // todoList : todos라는 배열이 그대로 들어온다.
+                        todoStorage.save(todoList)
+                    }
+
+                }
+            }
+
+            // localStorage
+            // browser는 localStorage에 접근이 가능하다.
+            // console.dir(localStorage)로 속성을 찾아볼 수 있다.
+            // key-value 자료구조처럼 사용가능하다. // dict, object
+            // browser의 console창에 localStorage를 입력해보면 
+                // browser의 Chrome에서 검색했을 경우 무언가 차있는 것을 볼 수 있다.
+            // 하나의 커다란 object라고 생각하면 됨
+
+            // localStorage.setItem('key', 'value') : key와 해당하는 value 입력 // value에 list를 넣든 object를 넣든 string으로 들어간다.
+            // localStorage.getItem('key') : key로 검색
+
+            /*
+            localStorage.setItem('name', 'john')
+                undefined
+            localStorage.getItem('name')
+                "john"
+            localStorage.setItem('john', {name: 'john', age:34, address: '서울'})
+                undefined
+            localStorage.getItem('john')
+                "[object Object]"
+
+            localStorage.getItem('john').name
+                undefined
+            localStorage.setItem('ssafy1', ['a', 'b'])
+                undefined
+            localStorage.getItem('ssafy1')
+                "a,b"
+            localStorage.getItem('ssafy1')[0]
+                "a"
+            localStorage.getItem('ssafy1')[1]
+                ","
+            localStorage.getItem('john')[1]
+                "o"
+            localStorage.length
+                3
+            localStorage
+                Storage {john: "[object Object]", name: "john", ssafy1: "a,b", length: 3}
+
+
+            */
+
+
+        })
+    </script>
+</body>
+
+</html>

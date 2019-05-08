@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <!-- 인자에 함수 대신 변수도 사용 가능 (number) -->
+        <button @click="number++">1씩 증가</button>
+        <button @click="number--">1씩 감소</button>
+        <button @click="addTwo(3)">2씩 증가</button>
+        <button @click="secondNumber++">secondNumber</button>
+        <p>{{ number }}</p>
+        <p>{{ computedNumber }} && {{ TenUpper() }}</p>
+        <!-- <p>{{ addTwo(2) }}</p> --> <!-- 이상하게 증가한다. -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- computed와 method를 구별하자 -->
+    <script>
+    new Vue({// Vue 안에 object({}) 하나 넣음
+        el: '#app',
+        data: {
+            number: 0,
+            secondNumber: 0,
+        },
+        // 비동기적 처리에 사용 X
+        computed: { // reload없이 계속 구현가능
+            computedNumber: function() {
+                // return this.number
+                console.log('나는 컴퓨티드 !')
+                // return this.number > 10? '10보다 큽니다.' : '10보다 작습니다.'
+                return this.secondNumber > 10? '10보다 큽니다.' : '10보다 작습니다.'
+                
+            }
+        },
+        // 비동기적 처리 사용 O
+        methods: {
+            TenUpper: function() {
+                console.log('나는 메소드 !')
+                // return this.number > 10? '10보다 큽니다.' : '10보다 작습니다.'
+                return this.secondNumber > 10? '10보다 큽니다.' : '10보다 작습니다.'
+            },
+
+            addTwo: function(num) {
+                return this.number += num 
+                // return은 써주면 button에 괄호를 써주어야 하고
+                // return을 안써주면 괄호를 안써줘도 된다.
+                // 우리는 return 값을 보고 있다.
+            }
+        }
+        // velopert vuejs 보기
+    })
+    
+    
+    </script>
+
+
+</body>
+</html>

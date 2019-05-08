@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>색칠놀이</title>
+    <style>
+        .box {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            display: inline-block; /* inline만 사용하면 없어진다. */
+            background-color: gray;
+        }
+
+        .red {
+            background-color: red;
+        }
+        .yellow {
+            background-color: yellow;
+        }
+        .green {
+            background-color: green;
+        }
+        .mouse {
+            background-color: aquamarine;
+        }
+
+    </style>
+</head>
+<body> <!-- body에 적용되지 않음 -->
+    <!-- 손수 만든 신호등.... => Vue 사용 -->
+    <div class="box red"></div>
+    <div class="box yellow"></div>
+    <div class="box green"></div>
+
+    <div id="app">
+        <div @click="changeColor" v-bind:class="color" class="box"></div>
+        <!-- property 값에 key-value형태로 줄 수 있음 -->
+        <div @click="changeColor" :class="{red: changed}" class="box"></div> <!-- changed가 true 이면 red로 바뀜 -->
+        <div :class="color" class="box"></div> <!-- input에 입력하면 해당 color 생김 -->
+        <div :class="color" class="box" :style="{backgroundColor: specialColar}"></div> <!-- style에서의 '-'를 Javascript에서 사용할 수 없기에 대문자로 구별하도록 지정하였다. -->
+        <div class="box"></div>
+        <div :style="inputColor" class="box"></div>
+        <!-- <input @keyup.enter.space="scream" v-model="color"> --> <!-- 원하는 key를 연달아 입력 가능 -->
+        <!-- <input @keyup.enter="scream" v-model="color"> --> <!-- 입력하는 순간 바로 바뀜 -->
+        <!-- enter 쳤을 때 색 바뀌게 하기 -->
+        <input @keyup.enter="scream" v-model="userColor">
+        <div class="mouse box" @mousemove="printCoordinate"></div>
+        <div class="mouse box" @mousemove="printCoordinate(10, $event)"></div> <!-- undifined가 출력된다.-->
+        
+    
+    </div>
+    
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // 동적인 UX
+        
+        // 변수에 굳이 binding 할 필요 X // Vue가 알아서 해줌
+        new Vue ({
+            el: '#app',
+            data: {
+                test: "Happy Hacking!",
+                color: '', // default-color : gray
+                userColor: '',
+                changed: true,
+                specialColar: 'aqua',
+                width: 100, 
+            },
+            methods: {
+                // ==>
+                // 내가 한 것
+                // changeColor: function() {
+                //     if (!this.color) {
+                //         this.color = 'red'
+                //     } else {
+                //         this.color = ''
+                //     }
+                    
+                // }
+                // <==
+                changeColor: function (event) { // event에 달려있는 인자를 받아오면 의미 있음
+                    console.log(event)
+                    this.changed = !this.changed
+                },
+                scream: function() {
+                    console.log('야')
+                    this.color = this.userColor // enter를 입력했을 때 적용
+                },
+                printCoordinate: function (num, event) { // 해당 구간 내에서 event 발생
+                    // 인자가 아무것도 넘어오지 않을 때
+                    // 이벤트 발생 위치 출력
+                    // console.log(event.clientX)
+                    // console.log(event.clientY)
+                    console.log(num)
+                    console.log(event)
+                },
+            },
+            computed: { //property처럼 작용하지만 data를 가져와서 동적으로 사용 // methods와의 차이 : cashing
+                // async를 제외한 구성은 대부분 computed로 구성한다. => async 때는 사용하지 않는다.
+                inputColor: function() {
+                    return {
+                        backgroundColor: this.color,
+                        width: this.width + 'px' // width도 데이터를 기준으로 정해야 한다.
+                    }
+                }
+            }
+        })
+
+    </script>
+</body>
+</html>

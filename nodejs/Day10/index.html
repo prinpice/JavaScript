@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- Vue -->
+    <!-- 도움되는 콘솔 경고를 포함한 개발 버전 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- Axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <style>
+        img {
+            width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <!-- radio : click 해서 원하는 선택지를 선택 -->
+        <input id="one" type="radio" v-model="picked" value="Meow"> <!-- div#one + tab -->
+        <label for="one">고양이</label>
+        <br>
+        <input type="radio" id="two" v-model="picked" value="Bow!">
+        <label for="two">댕댕이</label>
+        <br>
+        <span>{{ picked }}</span>
+        <br>
+        <!-- computed 된 것은 바로 반환 -->
+        <img v-bind:src="image"/> 
+
+        <!-- watch가 무슨일을 하는지 test 해보자1 -->
+        <input type="text" v-model="test">
+
+    </div>
+    <script>
+        /*
+        // 고양이
+        // https://api.thecatapi.com/v1/images/search
+        
+        const getCatImage = async function () {
+            const catURL = 'https://api.thecatapi.com/v1/images/search'
+            const response = await axios.get(catURL)
+            const catImage = response.data[0].url
+            console.log(catImage) // url
+        }
+
+        // 강아지
+        // https://dog.ceo/api/breeds/image/random
+
+        const getDogImage = async function () {
+            const dogURL = 'https://dog.ceo/api/breeds/image/random'
+            const response = await axios.get(dogURL)
+            const dogImage = response.data.message
+            console.log(dogImage) // url
+        }
+        // => Vue instance 에서 사용해보자
+        */
+        //test
+        // getCatImage()
+        // getDogImage()
+
+        const dogAndCat = new Vue({
+            el: '#main',
+            data: {
+                picked: '', // 둘 중에 어떤것을 선택하는지 지정하여 저장
+                image: '', // image url을 저장
+                test: '', // watch가 무슨일을 하는지 test 해보자2
+            },
+
+            watch: {
+                // picked와 1대1 매칭 : picked 에 값이 들어올 때마다 함수가 실행됨
+                picked: function () { // picked를 watch하고 있다
+                    // alert(this.picked)
+                    // this.picked 의 값을 확인한다.
+                    // 고양이인지 댕댕이인지 조건문으로 분기하여
+                    // 아래 methods 에 구현된 함수를 실행한다.
+                    if (this.picked === 'Meow') {
+                        this.getCatImage() // 이 Vue의 getCatImage() 함수를 실행
+                    } else {
+                        this.getDogImage()
+                    }
+                },
+                // watch가 무슨일을 하는지 test 해보자3
+                test: function (newValue, prevValue) {
+                    console.log('new ', newValue)
+                    console.log('previous', prevValue)
+                }
+            },
+
+            methods: { 
+                getCatImage: async function () {
+                    const catURL = 'https://api.thecatapi.com/v1/images/search'
+                    const response = await axios.get(catURL)
+                    const catImage = response.data[0].url
+                    this.image = catImage
+                },
+                getDogImage: async function () {
+                    const dogURL = 'https://dog.ceo/api/breeds/image/random'
+                    const response = await axios.get(dogURL)
+                    const dogImage = response.data.message
+                    this.image = dogImage
+                }
+                // => 적용시켜보자
+                // methods => computed로 바꾸고 위에 img tag를 사용해도 아래의 함수들이 promise 함수이므로 이미지를 보여주지 않음
+                // computed를 사용하면 property로 html에 바로 적용
+                // 비동기적일 때는 promise로 반환되기 때문에 computed로 바로 property를 적용할 수 없다. // => methods 와 watch를 사용한다.
+                // 그 외의 경우에는 바로 사용 가능
+                // => watch 사용
+            },
+            
+        })
+    </script>
+</body>
+</html>

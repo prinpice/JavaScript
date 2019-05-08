@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue Start!</title>
+</head>
+<body>
+    <div id="app">
+        <!-- vue에서 문법 사용할 때 'v-'를 붙인다. -->
+        <span v-html="msg"></span>
+        <!-- v-html : 임의의 attribute 지정 -->
+        <!-- <span>{{msg}}</span> -->
+        <h1>{{msg}}</h1>
+        <!-- p태그 안에 h1태그 적용되지 않음/span만 적용됨 -->
+        <!-- span이든 p이든 div이든 상관 노노함 -->
+        <span>{{age}}</span>
+        <!-- array가 출력됨 -->
+        <p>{{todos}}</p>
+        <!-- literal로 넣으면 안됨 -->
+        <ul>
+            <li>{{ todos[0] }}</li>
+            <li>{{ todos[1] }}</li>
+            <li>{{ todos[2] }}</li>
+        </ul>
+        <!-- vue.js에게 맡기자 -->
+        <!-- 반복문 -->
+        <!-- iterater하게 가자 -->
+        <ul>
+            <li v-for="todo in todos">{{todo}}</li>
+        </ul>
+        <!-- 조건문 -->
+        <p v-if="isMarried">결혼했다리</p> 
+        <!-- true일 경우 출력O, false일 경우 출력X -->
+        <h2>게시판입니다.</h2>
+        <ol>
+            <!-- object가 출력됨 -->
+            <li v-for="post in posts">{{post}}</li>
+
+            <!-- iterate하면 value값이 나옴 -->
+            <li v-for="s in ssafy">{{s}}</li>
+        </ol>
+        <ul>
+            <!-- value 출력 -->
+            <li v-for="post in posts">{{post.content}}</li>
+            <!-- checked가 true인 것만 출력 -->
+            <!-- 동일한 노드에 v-for와 v-if가 같이있다면 for가 먼저 실행됨 -->
+            <li v-for="post in posts" v-if="post.checked">{{post.content}}</li>
+        </ul>
+        <ol>
+            <li v-for="post in posts">
+                <ul>
+                        <li v-for="c in post">{{c}}</li>
+                </ul>
+                
+            </li>
+        </ol>
+    </div>
+    <!-- 상용버전, 속도와 용량이 최적화됨. -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script>
+    // 위에서 직접 입력하는 것이 아니라
+    // 객체를 하나 뽑아서 사용
+    let app = new Vue({
+        // el, data, methods, filters, computed, watch, directives만 있어도 활용 가능
+        // render파트는 vue.js에게 맡김
+
+
+        // 주어(HTML element)
+        el: '#app', // element
+        // 목적어(data)
+        data: {
+            msg: 'happy hacking', // string
+            age: 34, // numeric value
+            todos: ['Vue.js 배우기', 'Javascript 복습하기', '어플리케이션 제작하기'], // array
+            isMarried: false,
+            posts: [{//object
+                id:1,
+                content: '1번글',
+                checked: false, // 공개 비공개 포스트는 boolean형으로 들어있는 경우가 많다.
+            }, {
+                id:2,
+                content: '2번글',
+                checked: false,
+            }, {
+                id:3,
+                content: '3번글',
+                checked: true,
+            }],
+            ssafy: {
+                name: '싸피',
+                company: '삼성',
+            }
+        },
+        // 동사(서술어, function)
+        methods: { // function // 여기서는 arrow func를 사용하면 안됨!!! // arrow func는 this를 사용하지 못함
+            plus: function () {
+                this.age += 1
+            }
+        }
+
+        // filters:
+        // computed:
+        // watch:
+        // directives:
+            // 사용자 정의
+            
+        // directive
+            // vue.js를 지시하는 예약어 // v-if / v-for / v-model / v-html / v-on / v-bind / v-once / v-pro
+    })
+
+    console.log(app) // 객체 출력됨
+
+    </script>
+
+
+
+</body>
+</html>
